@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+	<string name="app_name">GraphicsAndAnimationsLab</string>
+	<string name="add">Add</string>
+	<string name="remove">Remove</string>
+	<string name="score">Score: 0</string>
+	<string name="lives">Lives: 3</string>
+
+</resources>
