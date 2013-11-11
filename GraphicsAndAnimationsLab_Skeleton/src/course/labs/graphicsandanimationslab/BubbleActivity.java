@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 import android.widget.TextView;
 
 public class BubbleActivity extends Activity {
@@ -30,7 +31,14 @@ public class BubbleActivity extends Activity {
 	int score = 0;
 	boolean canAdd = true;
 	int level = 1;
+	int lives = 3;
+	
+	static final int LEFT = 1;
+	static final int RIGHT = 2;
+	static final int UP = 3;
+	static final int DOWN = 4;
 	private GestureDetector mGestureDetector;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -177,6 +185,18 @@ public class BubbleActivity extends Activity {
 			Log.i(TAG, "Bubble direction is dx:" + mDx + " dy:" + mDy);
 
 		}
+
+		public int getCountOnBubble(){
+			return bounces;
+		}
+		public void incrementScore(int incrementBy){
+			score += incrementBy;
+		}
+
+
+		// stop the BubbleView's movement calculations and remove it from the
+		// screen
+
 		// Returns true is the BubbleView intersects position (x,y)
 		private synchronized boolean intersects(float x, float y) {
 			return x > mX && x < mX + mScaledBitmapWidth && y > mY
@@ -194,21 +214,42 @@ public class BubbleActivity extends Activity {
 				Log.e(TAG, "failed to cancel mMoverFuture:" + this);
 			}
 		}
-		public int getCountOnBubble(){
-			return bounces;
-		}
-		public void incrementScore(int incrementBy){
-			score += incrementBy;
-		}
 		public void decrementCountOnBubble(){
 			bounces--;			
 		}
 
 		// moves the BubbleView
 		// returns true if the BubbleView has exited the screen
-		private boolean moveUntilOffScreen() {
+		private boolean moveUntilOffScreen() {			
 			if(isOutOfView())
+			{
+				lives--;
+				if (lives <= 0)
+				{
+					//Toast.makeText(context, );
+				}
 				return true;
+			}
+			else
+			{
+				int result = whereBouncing();
+
+				if (result > 0)
+				{
+					switch (result)
+					{
+					case LEFT:
+					case RIGHT:
+						mDy *= -1;
+						break;
+					case UP:
+					case DOWN:
+						mDx *= -1;
+						break;
+					}
+					bounces--;
+				}
+			}
 			mX += mDx;
 			mY += mDy;
 
@@ -222,6 +263,17 @@ public class BubbleActivity extends Activity {
 					|| mY < 0 - mScaledBitmapWidth || mY > mDisplayHeight;
 		}
 
+		private int whereBouncing() {
+			if (mX < 0)
+				return LEFT;
+			else if (mX > mDisplayWidth - mScaledBitmapWidth)
+				return RIGHT;
+			else if (mY < 0)
+				return UP;
+			else if (mY > mDisplayHeight - mScaledBitmapWidth)
+				return DOWN;
+			else return 0;
+}
 		private boolean isBouncing() {
 			return mX < 0 || mX > mDisplayWidth - mScaledBitmapWidth
 					|| mY < 0 || mY > mDisplayHeight - mScaledBitmapWidth;
@@ -231,7 +283,7 @@ public class BubbleActivity extends Activity {
 		@Override
 		protected void onDraw(Canvas canvas) {
 			canvas.drawBitmap(mScaledBitmap, mX, mY, mPainter);
-			canvas.drawText("4", mX + (mScaledBitmapWidth/2)-1, mY + (mScaledBitmapWidth/2)+1, mPainter);
+			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/2)-1, mY + (mScaledBitmapWidth/2)+1, mPainter);
 			//canvas.drawBitmap(mScaledBitmap, getMatrix(), mPainter);
 		}
 	}
