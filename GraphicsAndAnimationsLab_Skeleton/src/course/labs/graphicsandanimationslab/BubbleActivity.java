@@ -194,6 +194,7 @@ public class BubbleActivity extends Activity {
 
 		// returns true if the BubbleView has completely left the screen
 		private boolean isOutOfView() {
+			//TODO decrement score
 			return mX < 0 - mScaledBitmapWidth || mX > mDisplayWidth
 					|| mY < 0 - mScaledBitmapWidth || mY > mDisplayHeight;
 		}
