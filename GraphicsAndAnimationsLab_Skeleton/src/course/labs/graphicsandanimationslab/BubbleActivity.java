@@ -26,6 +26,9 @@ public class BubbleActivity extends Activity {
 	FrameLayout mFrame;
 	Bitmap mBitmap;
 	LinkedList<BubbleView> mBubbleViews = new LinkedList<BubbleView>();
+	int score = 0;
+	boolean canAdd = true;
+	int level = 1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -93,6 +96,8 @@ public class BubbleActivity extends Activity {
 
 		// Reference to the movement calculation and update code
 		private final ScheduledFuture<?> mMoverFuture;
+		
+		private int bounces;
 
 		// context and width and height of the FrameLayout
 		public BubbleView(Context context, int w, int h) {
@@ -150,13 +155,16 @@ public class BubbleActivity extends Activity {
 		}
 		public int getCountOnBubble(){
 			//TODO
-			return 0;
+			return bounces;
 		}
 		public void incrementScore(int incrementBy){
 			//TODO
+			score += incrementBy;
 		}
 		public void decrementCountOnBubble(){
 			//TODO
+			bounces--;
+			
 		}
 		
 		
@@ -197,6 +205,10 @@ public class BubbleActivity extends Activity {
 			//TODO decrement score
 			return mX < 0 - mScaledBitmapWidth || mX > mDisplayWidth
 					|| mY < 0 - mScaledBitmapWidth || mY > mDisplayHeight;
+		}
+		
+		private boolean isBouncing() {
+			
 		}
 
 		// Draws the scaled Bitmap
