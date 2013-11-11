@@ -208,7 +208,8 @@ public class BubbleActivity extends Activity {
 		}
 		
 		private boolean isBouncing() {
-			
+			return mX < 0 || mX > mDisplayWidth - mScaledBitmapWidth
+					|| mY < 0 || mY > mDisplayHeight - mScaledBitmapWidth;
 		}
 
 		// Draws the scaled Bitmap
