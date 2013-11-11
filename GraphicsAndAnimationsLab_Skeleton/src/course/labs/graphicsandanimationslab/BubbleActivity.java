@@ -60,12 +60,9 @@ public class BubbleActivity extends Activity {
 			// Manage RemoveButton
 
 			public void onClick(View v) {
-				final BubbleView bubbleView = new BubbleView(
-						getApplicationContext(), mFrame.getWidth(), mFrame
-						.getHeight());
 				int randomWidth = (int)(Math.random() * (mFrame.getWidth()/2) + 60);
 				int randomHeight = (int)(Math.random() * (mFrame.getHeight()/2) + 60);
-				BubbleView b = new BubbleView(BubbleActivity.this, mFrame.getWidth(), mFrame.getHeight());
+				BubbleView b = new BubbleView(BubbleActivity.this, mFrame.getWidth(), mFrame.getHeight(),((int)Math.random()*level + 1));
 				mFrame.addView(b);
 			}
 		});
@@ -73,9 +70,7 @@ public class BubbleActivity extends Activity {
 	public void setupGestureDetector(){
 
 		mGestureDetector = new GestureDetector(this,
-
 				new GestureDetector.SimpleOnGestureListener() {
-
 
 			// If a single tap intersects a BubbleView, then pop the BubbleView
 			// Otherwise, create a new BubbleView at the tap's location.
@@ -132,10 +127,11 @@ public class BubbleActivity extends Activity {
 		private int bounces;
 
 		// context and width and height of the FrameLayout
-		public BubbleView(Context context, int w, int h) {
+		public BubbleView(Context context, int w, int h,int bounces) {
 
 			super(context);
-
+			
+			this.bounces = bounces;
 			mDisplayWidth = w;
 			mDisplayHeight = h;
 
