@@ -1,6 +1,5 @@
 package course.labs.graphicsandanimationslab;
 
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,17 +15,19 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import android.widget.TextView;
 
 public class BubbleActivity extends Activity {
 
 	FrameLayout mFrame;
 	Bitmap mBitmap;
-	LinkedList<BubbleView> mBubbleViews = new LinkedList<BubbleView>();
 	int score = 0;
 	boolean canAdd = true;
 	int level = 1;
@@ -36,6 +37,8 @@ public class BubbleActivity extends Activity {
 	static final int RIGHT = 2;
 	static final int UP = 3;
 	static final int DOWN = 4;
+	private GestureDetector mGestureDetector;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,13 +66,35 @@ public class BubbleActivity extends Activity {
 				int randomWidth = (int)(Math.random() * (mFrame.getWidth()/2) + 60);
 				int randomHeight = (int)(Math.random() * (mFrame.getHeight()/2) + 60);
 				BubbleView b = new BubbleView(BubbleActivity.this, mFrame.getWidth(), mFrame.getHeight());
-				mBubbleViews.add(b);
 				mFrame.addView(b);
 			}
 		});
 	}
 	public void setupGestureDetector(){
-		//TODO
+
+		mGestureDetector = new GestureDetector(this,
+
+				new GestureDetector.SimpleOnGestureListener() {
+
+
+			// If a single tap intersects a BubbleView, then pop the BubbleView
+			// Otherwise, create a new BubbleView at the tap's location.
+
+			@Override
+			public boolean onSingleTapConfirmed(MotionEvent event) {
+				for(int x =0;x < mFrame.getChildCount();x++)
+				{
+					BubbleView b = (BubbleView)mFrame.getChildAt(x);
+					if(b.intersects(event.getX(), event.getY())){
+						b.stop();
+						score += level;
+						TextView score = (TextView)findViewById(R.id.score);
+						score.setText("Score: " + score);
+					}					
+				}
+				return true;
+			}
+		});
 	}
 
 	private class BubbleView extends View {
@@ -160,35 +185,37 @@ public class BubbleActivity extends Activity {
 			Log.i(TAG, "Bubble direction is dx:" + mDx + " dy:" + mDy);
 
 		}
+
 		public int getCountOnBubble(){
-			//TODO
 			return bounces;
 		}
 		public void incrementScore(int incrementBy){
-			//TODO
 			score += incrementBy;
 		}
 
 
 		// stop the BubbleView's movement calculations and remove it from the
 		// screen
+
+		// Returns true is the BubbleView intersects position (x,y)
+		private synchronized boolean intersects(float x, float y) {
+			return x > mX && x < mX + mScaledBitmapWidth && y > mY
+					&& y < mY + mScaledBitmapWidth;
+		}
 		private void stop() {
-
-			// cancel the executor
-			if (mMoverFuture.cancel(true)) {
-
-				// post a runnable to mFrame to remove this BubbleView
+			if (null != mMoverFuture && mMoverFuture.cancel(true)) {
 				mFrame.post(new Runnable() {
-
 					@Override
 					public void run() {
 						mFrame.removeView(BubbleView.this);
-
 					}
 				});
 			} else {
 				Log.e(TAG, "failed to cancel mMoverFuture:" + this);
 			}
+		}
+		public void decrementCountOnBubble(){
+			bounces--;			
 		}
 
 		// moves the BubbleView
@@ -246,6 +273,10 @@ public class BubbleActivity extends Activity {
 			else if (mY > mDisplayHeight - mScaledBitmapWidth)
 				return DOWN;
 			else return 0;
+}
+		private boolean isBouncing() {
+			return mX < 0 || mX > mDisplayWidth - mScaledBitmapWidth
+					|| mY < 0 || mY > mDisplayHeight - mScaledBitmapWidth;
 		}
 
 		// Draws the scaled Bitmap
