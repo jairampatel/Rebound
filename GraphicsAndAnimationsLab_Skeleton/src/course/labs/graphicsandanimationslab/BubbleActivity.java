@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 public class BubbleActivity extends Activity {
 
@@ -29,6 +30,12 @@ public class BubbleActivity extends Activity {
 	int score = 0;
 	boolean canAdd = true;
 	int level = 1;
+	int lives = 3;
+	
+	static final int LEFT = 1;
+	static final int RIGHT = 2;
+	static final int UP = 3;
+	static final int DOWN = 4;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -96,7 +103,7 @@ public class BubbleActivity extends Activity {
 
 		// Reference to the movement calculation and update code
 		private final ScheduledFuture<?> mMoverFuture;
-		
+
 		private int bounces;
 
 		// context and width and height of the FrameLayout
@@ -161,13 +168,8 @@ public class BubbleActivity extends Activity {
 			//TODO
 			score += incrementBy;
 		}
-		public void decrementCountOnBubble(){
-			//TODO
-			bounces--;
-			
-		}
-		
-		
+
+
 		// stop the BubbleView's movement calculations and remove it from the
 		// screen
 		private void stop() {
@@ -191,9 +193,36 @@ public class BubbleActivity extends Activity {
 
 		// moves the BubbleView
 		// returns true if the BubbleView has exited the screen
-		private boolean moveUntilOffScreen() {
+		private boolean moveUntilOffScreen() {			
 			if(isOutOfView())
+			{
+				lives--;
+				if (lives <= 0)
+				{
+					//Toast.makeText(context, );
+				}
 				return true;
+			}
+			else
+			{
+				int result = whereBouncing();
+
+				if (result > 0)
+				{
+					switch (result)
+					{
+					case LEFT:
+					case RIGHT:
+						mDy *= -1;
+						break;
+					case UP:
+					case DOWN:
+						mDx *= -1;
+						break;
+					}
+					bounces--;
+				}
+			}
 			mX += mDx;
 			mY += mDy;
 
@@ -206,17 +235,24 @@ public class BubbleActivity extends Activity {
 			return mX < 0 - mScaledBitmapWidth || mX > mDisplayWidth
 					|| mY < 0 - mScaledBitmapWidth || mY > mDisplayHeight;
 		}
-		
-		private boolean isBouncing() {
-			return mX < 0 || mX > mDisplayWidth - mScaledBitmapWidth
-					|| mY < 0 || mY > mDisplayHeight - mScaledBitmapWidth;
+
+		private int whereBouncing() {
+			if (mX < 0)
+				return LEFT;
+			else if (mX > mDisplayWidth - mScaledBitmapWidth)
+				return RIGHT;
+			else if (mY < 0)
+				return UP;
+			else if (mY > mDisplayHeight - mScaledBitmapWidth)
+				return DOWN;
+			else return 0;
 		}
 
 		// Draws the scaled Bitmap
 		@Override
 		protected void onDraw(Canvas canvas) {
 			canvas.drawBitmap(mScaledBitmap, mX, mY, mPainter);
-			canvas.drawText("4", mX + (mScaledBitmapWidth/2)-1, mY + (mScaledBitmapWidth/2)+1, mPainter);
+			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/2)-1, mY + (mScaledBitmapWidth/2)+1, mPainter);
 			//canvas.drawBitmap(mScaledBitmap, getMatrix(), mPainter);
 		}
 	}
