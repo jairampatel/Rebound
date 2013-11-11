@@ -233,11 +233,11 @@ public class BubbleActivity extends Activity {
 					{
 					case LEFT:
 					case RIGHT:
-						mDy *= -1;
+						mDx *= -1;
 						break;
 					case UP:
 					case DOWN:
-						mDx *= -1;
+						mDy *= -1;
 						break;
 					}
 					bounces--;
