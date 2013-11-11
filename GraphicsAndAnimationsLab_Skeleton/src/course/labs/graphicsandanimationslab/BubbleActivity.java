@@ -50,6 +50,8 @@ public class BubbleActivity extends Activity {
 		mFrame = (FrameLayout) findViewById(R.id.frame);
 		mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.b64);
 
+		setupGestureDetector();
+
 		// Set up Add and Remove buttons
 		final Button addButton = (Button) findViewById(R.id.add_button);
 
@@ -68,19 +70,20 @@ public class BubbleActivity extends Activity {
 		});
 	}
 	public void setupGestureDetector(){
-
+		Log.e("REBOUND", "setting up gesture detector");
 		mGestureDetector = new GestureDetector(this,
 				new GestureDetector.SimpleOnGestureListener() {
 
-			// If a single tap intersects a BubbleView, then pop the BubbleView
-			// Otherwise, create a new BubbleView at the tap's location.
 
 			@Override
 			public boolean onSingleTapConfirmed(MotionEvent event) {
+				Log.e("REBOUND", "tapped");
 				for(int x =0;x < mFrame.getChildCount();x++)
 				{
+					Log.e("REBOUND", "child index: " + x);
 					BubbleView b = (BubbleView)mFrame.getChildAt(x);
 					if(b.intersects(event.getX(), event.getY())){
+						Log.e("REBOUND", "INTERSECTS: " + x);
 						b.stop();
 						score += level;
 						TextView score = (TextView)findViewById(R.id.score);
@@ -130,7 +133,7 @@ public class BubbleActivity extends Activity {
 		public BubbleView(Context context, int w, int h,int bounces) {
 
 			super(context);
-			
+
 			this.bounces = bounces;
 			mDisplayWidth = w;
 			mDisplayHeight = h;
@@ -236,11 +239,11 @@ public class BubbleActivity extends Activity {
 					{
 					case LEFT:
 					case RIGHT:
-						mDy *= -1;
+						mDx *= -1;
 						break;
 					case UP:
 					case DOWN:
-						mDx *= -1;
+						mDy *= -1;
 						break;
 					}
 					bounces--;
