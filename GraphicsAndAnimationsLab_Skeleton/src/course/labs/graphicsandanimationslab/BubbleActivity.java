@@ -32,7 +32,7 @@ public class BubbleActivity extends Activity {
 	boolean canAdd = true;
 	int level = 1;
 	int lives = 3;
-	
+
 	static final int LEFT = 1;
 	static final int RIGHT = 2;
 	static final int UP = 3;
@@ -262,7 +262,6 @@ public class BubbleActivity extends Activity {
 			return mX < 0 - mScaledBitmapWidth || mX > mDisplayWidth
 					|| mY < 0 - mScaledBitmapWidth || mY > mDisplayHeight;
 		}
-
 		private int whereBouncing() {
 			if (mX < 0)
 				return LEFT;
@@ -273,7 +272,7 @@ public class BubbleActivity extends Activity {
 			else if (mY > mDisplayHeight - mScaledBitmapWidth)
 				return DOWN;
 			else return 0;
-}
+		}
 		private boolean isBouncing() {
 			return mX < 0 || mX > mDisplayWidth - mScaledBitmapWidth
 					|| mY < 0 || mY > mDisplayHeight - mScaledBitmapWidth;
