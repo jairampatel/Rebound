@@ -173,7 +173,6 @@ public class BubbleActivity extends Activity {
 					else{
 						stop();
 					}
-
 				}
 			}, 0, REFRESH_RATE, TimeUnit.MILLISECONDS);
 
@@ -221,16 +220,14 @@ public class BubbleActivity extends Activity {
 			{
 				lives--;
 				if (lives <= 0)
-				{
-					//Toast.makeText(context, );
-				}
+					Toast.makeText(getApplicationContext(), "Bubble missed!",Toast.LENGTH_SHORT).show();
 				return true;
 			}
 			else
 			{
 				int result = whereBouncing();
 
-				if (result > 0)
+				if (result > 0 && bounces > 0)
 				{
 					switch (result)
 					{
