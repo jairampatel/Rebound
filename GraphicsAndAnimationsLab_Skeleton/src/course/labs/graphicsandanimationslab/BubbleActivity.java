@@ -84,7 +84,7 @@ public class BubbleActivity extends Activity {
 					BubbleView b = (BubbleView)mFrame.getChildAt(x);
 					if(b.intersects(event.getX(), event.getY())){
 						Log.e("REBOUND", "INTERSECTS: " + x);
-						b.stop();
+						b.stop(true);
 						score += level;
 						TextView score = (TextView)findViewById(R.id.score);
 						score.setText("Score: " + score);
@@ -108,6 +108,8 @@ public class BubbleActivity extends Activity {
 		// Current top and left coordinates
 		private float mX, mY;
 
+		private Activity act;
+		
 		// Direction and speed of movement
 		// measured in terms of how much the BubbleView moves
 		// in one time step.
@@ -133,7 +135,8 @@ public class BubbleActivity extends Activity {
 		public BubbleView(Context context, int w, int h,int bounces) {
 
 			super(context);
-			
+
+			act = (Activity) context;
 			this.bounces = bounces;
 			mDisplayWidth = w;
 			mDisplayHeight = h;
@@ -143,7 +146,7 @@ public class BubbleActivity extends Activity {
 
 			Random r = new Random();
 			mPainter.setColor(Color.RED);
-			mPainter.setTextSize(10);
+			mPainter.setTextSize(72);
 
 			// Set BubbleView's size
 
@@ -175,7 +178,7 @@ public class BubbleActivity extends Activity {
 						postInvalidate();
 					}
 					else{
-						stop();
+						stop(false);
 					}
 				}
 			}, 0, REFRESH_RATE, TimeUnit.MILLISECONDS);
@@ -193,12 +196,20 @@ public class BubbleActivity extends Activity {
 			return x > mX && x < mX + mScaledBitmapWidth && y > mY
 					&& y < mY + mScaledBitmapWidth;
 		}
-		private void stop() {
+		private void stop(final boolean isPopped) {
 			if (null != mMoverFuture && mMoverFuture.cancel(true)) {
 				mFrame.post(new Runnable() {
 					@Override
 					public void run() {
 						mFrame.removeView(BubbleView.this);
+						if (!isPopped)
+						{
+							lives--;
+							TextView liveDisplay = (TextView)act.findViewById(R.id.lives);
+							liveDisplay.setText("Lives: " + lives);
+							if (lives >= 0)
+								Toast.makeText(getApplicationContext(), "Bubble missed!",Toast.LENGTH_SHORT).show();
+						}
 					}
 				});
 			} else {
@@ -229,29 +240,11 @@ public class BubbleActivity extends Activity {
 					}
 					bounces--;
 				}
-				mX += mDx;
-				mY += mDy;
+			}
+			mX += mDx;
+			mY += mDy;
 
-				return false;
-			}
-			else
-			{
-				if(isOutOfView())
-				{
-					lives--;
-					TextView liveDisplay = (TextView)findViewById(R.id.lives);
-					liveDisplay.setText("Lives: " + lives);
-					if (lives <= 0)
-						Toast.makeText(getApplicationContext(), "Bubble missed!",Toast.LENGTH_SHORT).show();
-					return true;
-				}
-				else 
-				{
-					mX += mDx;
-					mY += mDy;
-					return false;
-				}
-			}
+			return false;
 		}
 
 		// returns true if the BubbleView has completely left the screen
@@ -276,8 +269,8 @@ public class BubbleActivity extends Activity {
 		@Override
 		protected void onDraw(Canvas canvas) {
 			canvas.drawBitmap(mScaledBitmap, mX, mY, mPainter);
-			
-			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/2)-1, mY + (mScaledBitmapWidth/2)+1, mPainter);
+
+			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/4)-1, mY + (mScaledBitmapWidth/4)+1, mPainter);
 			//canvas.drawBitmap(mScaledBitmap, getMatrix(), mPainter);
 		}
 	}
