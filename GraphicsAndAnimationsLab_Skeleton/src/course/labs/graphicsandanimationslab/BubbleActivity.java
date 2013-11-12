@@ -74,7 +74,6 @@ public class BubbleActivity extends Activity {
 		mGestureDetector = new GestureDetector(this,
 				new GestureDetector.SimpleOnGestureListener() {
 
-
 			@Override
 			public boolean onSingleTapConfirmed(MotionEvent event) {
 				Log.e("REBOUND", "tapped");
