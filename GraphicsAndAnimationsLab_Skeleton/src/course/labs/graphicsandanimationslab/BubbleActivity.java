@@ -83,7 +83,6 @@ public class BubbleActivity extends Activity {
 			public boolean onTouch(View v, MotionEvent event) {
 				for(int x =0;x < mFrame.getChildCount();x++)
 				{
-					Log.e("REBOUND", "child index: " + x);
 					BubbleView b = (BubbleView)mFrame.getChildAt(x);
 					if(b.intersects(event.getX(), event.getY()) && b.bounces == 0 && lives > 0){
 						Log.e("REBOUND", "INTERSECTS: " + x);
