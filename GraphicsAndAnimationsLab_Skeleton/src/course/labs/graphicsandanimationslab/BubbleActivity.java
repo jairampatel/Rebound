@@ -133,7 +133,7 @@ public class BubbleActivity extends Activity {
 		public BubbleView(Context context, int w, int h,int bounces) {
 
 			super(context);
-
+			
 			this.bounces = bounces;
 			mDisplayWidth = w;
 			mDisplayHeight = h;
@@ -143,6 +143,7 @@ public class BubbleActivity extends Activity {
 
 			Random r = new Random();
 			mPainter.setColor(Color.RED);
+			mPainter.setTextSize(10);
 
 			// Set BubbleView's size
 
@@ -184,14 +185,6 @@ public class BubbleActivity extends Activity {
 
 		}
 
-		public int getCountOnBubble(){
-			return bounces;
-		}
-		public void incrementScore(int incrementBy){
-			score += incrementBy;
-		}
-
-
 		// stop the BubbleView's movement calculations and remove it from the
 		// screen
 
@@ -211,9 +204,6 @@ public class BubbleActivity extends Activity {
 			} else {
 				Log.e(TAG, "failed to cancel mMoverFuture:" + this);
 			}
-		}
-		public void decrementCountOnBubble(){
-			bounces--;			
 		}
 
 		// moves the BubbleView
@@ -249,6 +239,8 @@ public class BubbleActivity extends Activity {
 				if(isOutOfView())
 				{
 					lives--;
+					TextView liveDisplay = (TextView)findViewById(R.id.lives);
+					liveDisplay.setText("Lives: " + lives);
 					if (lives <= 0)
 						Toast.makeText(getApplicationContext(), "Bubble missed!",Toast.LENGTH_SHORT).show();
 					return true;
@@ -279,15 +271,12 @@ public class BubbleActivity extends Activity {
 				return DOWN;
 			else return 0;
 		}
-		private boolean isBouncing() {
-			return mX < 0 || mX > mDisplayWidth - mScaledBitmapWidth
-					|| mY < 0 || mY > mDisplayHeight - mScaledBitmapWidth;
-		}
 
 		// Draws the scaled Bitmap
 		@Override
 		protected void onDraw(Canvas canvas) {
 			canvas.drawBitmap(mScaledBitmap, mX, mY, mPainter);
+			
 			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/2)-1, mY + (mScaledBitmapWidth/2)+1, mPainter);
 			//canvas.drawBitmap(mScaledBitmap, getMatrix(), mPainter);
 		}
