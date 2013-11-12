@@ -43,7 +43,7 @@ public class BubbleActivity extends Activity {
 	static final int UP = 3;
 	static final int DOWN = 4;
 	private GestureDetector mGestureDetector;
-	
+
 	Handler mHandler = new Handler()
 	{
 		public void handleMessage(Message msg)
@@ -55,7 +55,7 @@ public class BubbleActivity extends Activity {
 			}
 			else
 				displayAlert("YOU LOSE...", "High score: " + highScore + "\nYour score: " + score);
-			
+
 		}
 	};
 
@@ -119,16 +119,16 @@ public class BubbleActivity extends Activity {
 		});
 	}
 	public void displayAlert(String title, String s) {
-	       AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	       builder.setMessage(s).setTitle(title).setIcon(R.drawable.icon).setCancelable(false)
-	       .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-	           public void onClick(DialogInterface dialog, int id) {
-	               dialog.cancel();
-	           }
-	       });
-	       AlertDialog alert = builder.create();
-	       alert.show();
-	   }
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(s).setTitle(title).setIcon(R.drawable.icon).setCancelable(false)
+		.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
 
 	private class BubbleView extends View {
 		// Base Bitmap Size
@@ -235,36 +235,33 @@ public class BubbleActivity extends Activity {
 						mFrame.removeView(BubbleView.this);
 						if (!isPopped)
 						{
-							lives--;
-							TextView liveDisplay = (TextView)act.findViewById(R.id.lives);
-							liveDisplay.setText("Lives: " + lives);
-							if (lives >= 0)
-								Toast.makeText(getApplicationContext(), "Bubble missed!",Toast.LENGTH_SHORT).show();
-							if (lives <= 0)
+							if (lives > 0)
 							{
-								while (mFrame.getChildCount() > 0)
+								lives--;
+								TextView liveDisplay = (TextView)act.findViewById(R.id.lives);
+								liveDisplay.setText("Lives: " + lives);
+								if (lives >= 0)
+									Toast.makeText(getApplicationContext(), "Bubble missed!",Toast.LENGTH_SHORT).show();
+								if (lives == 0)
 								{
-									BubbleView bv = (BubbleView)mFrame.getChildAt(0);
-									bv.stop(false);
-								}
-								//mHandler.sendEmptyMessage(score);
-								mHandler.post(new Runnable() {
+									mHandler.post(new Runnable() {
 
-									@Override
-									public void run() {
-										if (score > highScore)
-										{
-											displayAlert("CONGRATS!", "Your new high score: " + score + "\nOld high score: " + highScore);
-											highScore = score;
+										@Override
+										public void run() {
+											if (score > highScore)
+											{
+												displayAlert("CONGRATS!", "Your new high score: " + score + "\nOld high score: " + highScore);
+												highScore = score;
+											}
+											else
+												displayAlert("YOU LOSE...", "High score: " + highScore + "\nYour score: " + score);
+
 										}
-										else
-											displayAlert("YOU LOSE...", "High score: " + highScore + "\nYour score: " + score);
-										
-									}
-									
-								});
+
+									});
+								}
 							}
-							
+
 						}
 					}
 				});
@@ -317,7 +314,8 @@ public class BubbleActivity extends Activity {
 				return UP;
 			else if (mY > mDisplayHeight - mScaledBitmapWidth)
 				return DOWN;
-			else return 0;
+			else
+				return 0;
 		}
 
 		// Draws the scaled Bitmap
