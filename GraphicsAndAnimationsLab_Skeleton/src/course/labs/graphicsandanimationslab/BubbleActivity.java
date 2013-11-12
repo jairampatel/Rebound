@@ -1,3 +1,11 @@
+/**
+ * Rebound! The Fun Bouncing Bubble Game!
+ * 
+ * By Everett Lum and Jairam Patel
+ * 
+ * Bubbles bounce and you pop them when they reach zero. *You* set the difficulty! Aim for the high score!
+ */
+
 package course.labs.graphicsandanimationslab;
 
 import java.util.Random;
@@ -34,7 +42,6 @@ public class BubbleActivity extends Activity {
 	FrameLayout mFrame;
 	Bitmap mBitmap;
 	int score = 0;
-	boolean canAdd = true;
 	int level = 1;
 	int lives = 3;
 	int highScore = 0;
@@ -44,6 +51,7 @@ public class BubbleActivity extends Activity {
 	static final int UP = 3;
 	static final int DOWN = 4;
 	private GestureDetector mGestureDetector;
+	Button addButton;
 
 	Handler mHandler = new Handler()
 	{
@@ -77,24 +85,24 @@ public class BubbleActivity extends Activity {
 				{
 					Log.e("REBOUND", "child index: " + x);
 					BubbleView b = (BubbleView)mFrame.getChildAt(x);
-					if(b.intersects(event.getX(), event.getY())){
+					if(b.intersects(event.getX(), event.getY()) && b.bounces == 0 && lives > 0){
 						Log.e("REBOUND", "INTERSECTS: " + x);
 						b.stop(true);
 						score += level;
 						TextView scoreView = (TextView)findViewById(R.id.score);
 						scoreView.setText("Score: " + score);
+						addButton.setEnabled(false);
 					}					
 				}
 				return false;
 			}
-			
+
 		});
 		mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.b64);
 
 
 		// Set up Add and Remove buttons
-		final Button addButton = (Button) findViewById(R.id.add_button);
-
+		addButton = (Button) findViewById(R.id.add_button);
 		addButton.setOnClickListener(new OnClickListener() {
 
 			// Create a new BubbleView
@@ -104,38 +112,8 @@ public class BubbleActivity extends Activity {
 			public void onClick(View v) {
 				int randomWidth = (int)(Math.random() * (mFrame.getWidth()/2) + 60);
 				int randomHeight = (int)(Math.random() * (mFrame.getHeight()/2) + 60);
-				BubbleView b = new BubbleView(BubbleActivity.this, mFrame.getWidth(), mFrame.getHeight(),((int)Math.random()*level + 1));
+				BubbleView b = new BubbleView(BubbleActivity.this, mFrame.getWidth(), mFrame.getHeight(),((int)(Math.random()*level) + 1));
 				mFrame.addView(b);
-			}
-		});
-	}
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		setupGestureDetector();
-	}
-	public void setupGestureDetector(){
-		Log.e("REBOUND", "setting up gesture detector");
-		mGestureDetector = new GestureDetector(this,
-				new GestureDetector.SimpleOnGestureListener() {
-
-			@Override
-			public boolean onSingleTapConfirmed(MotionEvent event) {
-				Log.e("REBOUND", "tapped");
-				for(int x =0;x < mFrame.getChildCount();x++)
-				{
-					Log.e("REBOUND", "child index: " + x);
-					BubbleView b = (BubbleView)mFrame.getChildAt(x);
-					if(b.intersects(event.getX(), event.getY())){
-						Log.e("REBOUND", "INTERSECTS: " + x);
-						b.stop(true);
-						score += level;
-						TextView scoreView = (TextView)findViewById(R.id.score);
-						scoreView.setText("Score: " + score);
-					}					
-				}
-				return true;
 			}
 		});
 	}
@@ -218,10 +196,12 @@ public class BubbleActivity extends Activity {
 			mY = (int)(Math.random() * (mDisplayHeight/2) + (mDisplayWidth/4));
 
 			// Set movement direction and speed
-			while(mDx ==0 || mDy == 0){
-				mDx = (int)(Math.random() * 3 - 3);
-				mDy = (int)(Math.random() * 3 - 3);
+			while(mDx == 0 && mDy == 0){
+				mDx = (int)(Math.random() * level + 1);
+				mDy = (int)(Math.random() * level + 1);
 			}
+			if (r.nextInt(2) == 0) mDx *= -1;
+			if (r.nextInt(2) == 0) mDy *= -1;
 			ScheduledExecutorService executor = Executors
 					.newScheduledThreadPool(1);
 
@@ -276,13 +256,45 @@ public class BubbleActivity extends Activity {
 											}
 											else
 												displayAlert("YOU LOSE...", "High score: " + highScore + "\nYour score: " + score);
-
 										}
 
 									});
 								}
 							}
 
+						}
+						if (mFrame.getChildCount() == 0)
+						{
+							if (lives > 0)
+							{
+								level++;
+								mHandler.post(new Runnable() {
+
+									@Override
+									public void run() {
+										addButton.setEnabled(true);
+										displayAlert("Level up!", "Level " + level);
+									}
+
+								});
+							}
+							else
+							{
+								addButton.setEnabled(true);
+								for (int i = 0; i < mFrame.getChildCount(); i++)
+								{
+									BubbleView bv = (BubbleView)mFrame.getChildAt(i);
+									bv.mDx *= 10;
+									bv.mDy *= 10;
+								}
+								score = 0;
+								level = 1;
+								lives = 3;
+								TextView liveDisplay = (TextView)act.findViewById(R.id.lives);
+								liveDisplay.setText("Lives: " + lives);
+								TextView scoreView = (TextView)act.findViewById(R.id.score);
+								scoreView.setText("Score: " + score);
+							}
 						}
 					}
 				});
@@ -313,6 +325,8 @@ public class BubbleActivity extends Activity {
 						break;
 					}
 					bounces--;
+					if (bounces == 0)
+						mPainter.setColor(Color.GREEN);
 				}
 			}
 			mX += mDx;
