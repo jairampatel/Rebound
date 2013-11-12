@@ -75,10 +75,8 @@ public class BubbleActivity extends Activity {
 			public boolean onTouch(View v, MotionEvent event) {
 				for(int x =0;x < mFrame.getChildCount();x++)
 				{
-					Log.e("REBOUND", "child index: " + x);
 					BubbleView b = (BubbleView)mFrame.getChildAt(x);
 					if(b.intersects(event.getX(), event.getY())){
-						Log.e("REBOUND", "INTERSECTS: " + x);
 						b.stop(true);
 						score += level;
 						TextView scoreView = (TextView)findViewById(R.id.score);
