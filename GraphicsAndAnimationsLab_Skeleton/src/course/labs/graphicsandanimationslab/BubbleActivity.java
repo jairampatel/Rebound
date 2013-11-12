@@ -133,7 +133,7 @@ public class BubbleActivity extends Activity {
 		public BubbleView(Context context, int w, int h,int bounces) {
 
 			super(context);
-
+			
 			this.bounces = bounces;
 			mDisplayWidth = w;
 			mDisplayHeight = h;
@@ -143,6 +143,7 @@ public class BubbleActivity extends Activity {
 
 			Random r = new Random();
 			mPainter.setColor(Color.RED);
+			mPainter.setTextSize(10);
 
 			// Set BubbleView's size
 
@@ -183,13 +184,6 @@ public class BubbleActivity extends Activity {
 			Log.i(TAG, "Bubble direction is dx:" + mDx + " dy:" + mDy);
 		}
 
-		public int getCountOnBubble(){
-			return bounces;
-		}
-		public void incrementScore(int incrementBy){
-			score += incrementBy;
-		}
-
 		// Returns true is the BubbleView intersects position (x,y)
 		private synchronized boolean intersects(float x, float y) {
 			return x > mX && x < mX + mScaledBitmapWidth && y > mY
@@ -207,25 +201,16 @@ public class BubbleActivity extends Activity {
 				Log.e(TAG, "failed to cancel mMoverFuture:" + this);
 			}
 		}
-		public void decrementCountOnBubble(){
-			bounces--;			
-		}
 
 		// moves the BubbleView
 		// returns true if the BubbleView has exited the screen
 		private boolean moveUntilOffScreen() {			
-			if(isOutOfView())
-			{
-				lives--;
-				if (lives <= 0)
-					Toast.makeText(getApplicationContext(), "Bubble missed!",Toast.LENGTH_SHORT).show();
-				return true;
-			}
-			else
-			{
-				int result = whereBouncing();
 
-				if (result > 0 && bounces > 0)
+			int result = whereBouncing();
+
+			if (bounces > 0)
+			{
+				if (result > 0)
 				{
 					switch (result)
 					{
@@ -240,11 +225,29 @@ public class BubbleActivity extends Activity {
 					}
 					bounces--;
 				}
-			}
-			mX += mDx;
-			mY += mDy;
+				mX += mDx;
+				mY += mDy;
 
-			return false;
+				return false;
+			}
+			else
+			{
+				if(isOutOfView())
+				{
+					lives--;
+					TextView liveDisplay = (TextView)findViewById(R.id.lives);
+					liveDisplay.setText("Lives: " + lives);
+					if (lives <= 0)
+						Toast.makeText(getApplicationContext(), "Bubble missed!",Toast.LENGTH_SHORT).show();
+					return true;
+				}
+				else 
+				{
+					mX += mDx;
+					mY += mDy;
+					return false;
+				}
+			}
 		}
 
 		// returns true if the BubbleView has completely left the screen
@@ -264,15 +267,12 @@ public class BubbleActivity extends Activity {
 				return DOWN;
 			else return 0;
 		}
-		private boolean isBouncing() {
-			return mX < 0 || mX > mDisplayWidth - mScaledBitmapWidth
-					|| mY < 0 || mY > mDisplayHeight - mScaledBitmapWidth;
-		}
 
 		// Draws the scaled Bitmap
 		@Override
 		protected void onDraw(Canvas canvas) {
 			canvas.drawBitmap(mScaledBitmap, mX, mY, mPainter);
+			
 			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/2)-1, mY + (mScaledBitmapWidth/2)+1, mPainter);
 		}
 	}
