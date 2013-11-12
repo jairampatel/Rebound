@@ -70,7 +70,6 @@ public class BubbleActivity extends Activity {
 		mFrame = (FrameLayout) findViewById(R.id.frame);
 		mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.b64);
 
-		setupGestureDetector();
 
 		// Set up Add and Remove buttons
 		final Button addButton = (Button) findViewById(R.id.add_button);
@@ -89,11 +88,16 @@ public class BubbleActivity extends Activity {
 			}
 		});
 	}
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		setupGestureDetector();
+	}
 	public void setupGestureDetector(){
 		Log.e("REBOUND", "setting up gesture detector");
 		mGestureDetector = new GestureDetector(this,
 				new GestureDetector.SimpleOnGestureListener() {
-
 
 			@Override
 			public boolean onSingleTapConfirmed(MotionEvent event) {
@@ -140,7 +144,7 @@ public class BubbleActivity extends Activity {
 		private float mX, mY;
 
 		private Activity act;
-		
+
 		// Direction and speed of movement
 		// measured in terms of how much the BubbleView moves
 		// in one time step.
@@ -243,8 +247,6 @@ public class BubbleActivity extends Activity {
 									BubbleView bv = (BubbleView)mFrame.getChildAt(0);
 									bv.stop(false);
 								}
-								if (score > highScore)
-									highScore = score;
 								mHandler.sendEmptyMessage(score);
 							}
 							
@@ -258,7 +260,7 @@ public class BubbleActivity extends Activity {
 
 		// moves the BubbleView
 		// returns true if the BubbleView has exited the screen
-		private boolean moveUntilOffScreen() {			
+		private boolean moveUntilOffScreen() {                        
 
 			int result = whereBouncing();
 
