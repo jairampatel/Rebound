@@ -50,7 +50,6 @@ public class BubbleActivity extends Activity {
 		mFrame = (FrameLayout) findViewById(R.id.frame);
 		mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.b64);
 
-		setupGestureDetector();
 
 		// Set up Add and Remove buttons
 		final Button addButton = (Button) findViewById(R.id.add_button);
@@ -68,6 +67,12 @@ public class BubbleActivity extends Activity {
 				mFrame.addView(b);
 			}
 		});
+	}
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		setupGestureDetector();
 	}
 	public void setupGestureDetector(){
 		Log.e("REBOUND", "setting up gesture detector");
