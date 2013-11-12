@@ -237,7 +237,7 @@ public class BubbleActivity extends Activity {
 					lives--;
 					TextView liveDisplay = (TextView)findViewById(R.id.lives);
 					liveDisplay.setText("Lives: " + lives);
-					if (lives <= 0)
+					if (lives >= 0)
 						Toast.makeText(getApplicationContext(), "Bubble missed!",Toast.LENGTH_SHORT).show();
 					return true;
 				}
