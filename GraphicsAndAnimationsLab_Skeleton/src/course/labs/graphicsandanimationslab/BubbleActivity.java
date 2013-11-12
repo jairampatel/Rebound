@@ -185,11 +185,7 @@ public class BubbleActivity extends Activity {
 
 			Log.i(TAG, "Bubble created at x:" + mX + " y:" + mY);
 			Log.i(TAG, "Bubble direction is dx:" + mDx + " dy:" + mDy);
-
 		}
-
-		// stop the BubbleView's movement calculations and remove it from the
-		// screen
 
 		// Returns true is the BubbleView intersects position (x,y)
 		private synchronized boolean intersects(float x, float y) {
@@ -269,10 +265,10 @@ public class BubbleActivity extends Activity {
 		@Override
 		protected void onDraw(Canvas canvas) {
 			canvas.drawBitmap(mScaledBitmap, mX, mY, mPainter);
-
 			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/4)-1, mY + (mScaledBitmapWidth/4)+1, mPainter);
 			//canvas.drawBitmap(mScaledBitmap, getMatrix(), mPainter);
+			
+			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/2)-1, mY + (mScaledBitmapWidth/2)+1, mPainter);
 		}
 	}
-
 }
