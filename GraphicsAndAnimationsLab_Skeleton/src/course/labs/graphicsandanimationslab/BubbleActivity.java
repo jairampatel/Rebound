@@ -247,7 +247,22 @@ public class BubbleActivity extends Activity {
 									BubbleView bv = (BubbleView)mFrame.getChildAt(0);
 									bv.stop(false);
 								}
-								mHandler.sendEmptyMessage(score);
+								//mHandler.sendEmptyMessage(score);
+								mHandler.post(new Runnable() {
+
+									@Override
+									public void run() {
+										if (score > highScore)
+										{
+											displayAlert("CONGRATS!", "Your new high score: " + score + "\nOld high score: " + highScore);
+											highScore = score;
+										}
+										else
+											displayAlert("YOU LOSE...", "High score: " + highScore + "\nYour score: " + score);
+										
+									}
+									
+								});
 							}
 							
 						}
