@@ -23,6 +23,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -68,6 +69,26 @@ public class BubbleActivity extends Activity {
 
 		// Get references to UI elements
 		mFrame = (FrameLayout) findViewById(R.id.frame);
+		mFrame.setOnTouchListener(new OnTouchListener(){
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				for(int x =0;x < mFrame.getChildCount();x++)
+				{
+					Log.e("REBOUND", "child index: " + x);
+					BubbleView b = (BubbleView)mFrame.getChildAt(x);
+					if(b.intersects(event.getX(), event.getY())){
+						Log.e("REBOUND", "INTERSECTS: " + x);
+						b.stop(true);
+						score += level;
+						TextView scoreView = (TextView)findViewById(R.id.score);
+						scoreView.setText("Score: " + score);
+					}					
+				}
+				return false;
+			}
+			
+		});
 		mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.b64);
 
 
