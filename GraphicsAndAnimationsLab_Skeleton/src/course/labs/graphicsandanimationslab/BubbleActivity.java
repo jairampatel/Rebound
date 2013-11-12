@@ -7,13 +7,17 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -21,8 +25,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BubbleActivity extends Activity {
 
@@ -32,12 +36,28 @@ public class BubbleActivity extends Activity {
 	boolean canAdd = true;
 	int level = 1;
 	int lives = 3;
+	int highScore = 0;
 
 	static final int LEFT = 1;
 	static final int RIGHT = 2;
 	static final int UP = 3;
 	static final int DOWN = 4;
 	private GestureDetector mGestureDetector;
+	
+	Handler mHandler = new Handler()
+	{
+		public void handleMessage(Message msg)
+		{
+			if (score > highScore)
+			{
+				displayAlert("CONGRATS!", "Your new high score: " + score + "\nOld high score: " + highScore);
+				highScore = score;
+			}
+			else
+				displayAlert("YOU LOSE...", "High score: " + highScore + "\nYour score: " + score);
+			
+		}
+	};
 
 
 	@Override
@@ -86,14 +106,25 @@ public class BubbleActivity extends Activity {
 						Log.e("REBOUND", "INTERSECTS: " + x);
 						b.stop(true);
 						score += level;
-						TextView score = (TextView)findViewById(R.id.score);
-						score.setText("Score: " + score);
+						TextView scoreView = (TextView)findViewById(R.id.score);
+						scoreView.setText("Score: " + score);
 					}					
 				}
 				return true;
 			}
 		});
 	}
+	public void displayAlert(String title, String s) {
+	       AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	       builder.setMessage(s).setTitle(title).setIcon(R.drawable.icon).setCancelable(false)
+	       .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	               dialog.cancel();
+	           }
+	       });
+	       AlertDialog alert = builder.create();
+	       alert.show();
+	   }
 
 	private class BubbleView extends View {
 		// Base Bitmap Size
@@ -205,6 +236,18 @@ public class BubbleActivity extends Activity {
 							liveDisplay.setText("Lives: " + lives);
 							if (lives >= 0)
 								Toast.makeText(getApplicationContext(), "Bubble missed!",Toast.LENGTH_SHORT).show();
+							if (lives <= 0)
+							{
+								while (mFrame.getChildCount() > 0)
+								{
+									BubbleView bv = (BubbleView)mFrame.getChildAt(0);
+									bv.stop(false);
+								}
+								if (score > highScore)
+									highScore = score;
+								mHandler.sendEmptyMessage(score);
+							}
+							
 						}
 					}
 				});
@@ -245,7 +288,6 @@ public class BubbleActivity extends Activity {
 
 		// returns true if the BubbleView has completely left the screen
 		private boolean isOutOfView() {
-			//TODO decrement score
 			return mX < 0 - mScaledBitmapWidth || mX > mDisplayWidth
 					|| mY < 0 - mScaledBitmapWidth || mY > mDisplayHeight;
 		}
@@ -265,10 +307,8 @@ public class BubbleActivity extends Activity {
 		@Override
 		protected void onDraw(Canvas canvas) {
 			canvas.drawBitmap(mScaledBitmap, mX, mY, mPainter);
-			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/4)-1, mY + (mScaledBitmapWidth/4)+1, mPainter);
+			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/3), mY + (mScaledBitmapWidth/2), mPainter);
 			//canvas.drawBitmap(mScaledBitmap, getMatrix(), mPainter);
-			
-			canvas.drawText(bounces + "", mX + (mScaledBitmapWidth/2)-1, mY + (mScaledBitmapWidth/2)+1, mPainter);
 		}
 	}
 }
